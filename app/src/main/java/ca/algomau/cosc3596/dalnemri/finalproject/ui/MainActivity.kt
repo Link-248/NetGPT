@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import ca.algomau.cosc3596.dalnemri.finalproject.data.Message
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Constants.SEND_ID
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Response
+import ca.algomau.cosc3596.dalnemri.finalproject.utils.WebSearch
 
 class MainActivity : AppCompatActivity() {
 
@@ -79,15 +80,28 @@ class MainActivity : AppCompatActivity() {
     private fun botResponse(message: String){
         val timeStamp = Time.timeStamp()
         GlobalScope.launch(Dispatchers.IO) { // Use Dispatchers.IO for network operations
-            val response = Response.response(message)
-            withContext(Dispatchers.Main) { // Switch back to the main thread to update the UI
-                adapter.insertMessage(Message(response, RECEIVE_ID, timeStamp))
-                rvMessages.scrollToPosition(adapter.itemCount-1)
-                sendButton.isEnabled = true
-                etMessages.isEnabled = true
-                sendButton.text ="Send"
-                etMessages.setText("")
+            val response: String?
+            try{
+                response = Response.functionCallingResponse(message)
+                withContext(Dispatchers.Main) { // Switch back to the main thread to update the UI
+                    adapter.insertMessage(Message(response!!, RECEIVE_ID, timeStamp))
+                    rvMessages.scrollToPosition(adapter.itemCount-1)
+                    sendButton.isEnabled = true
+                    etMessages.isEnabled = true
+                    sendButton.text ="Send"
+                    etMessages.setText("")
+                }
+            }catch (e: Exception){
+                withContext(Dispatchers.Main) { // Switch back to the main thread to update the UI
+                    adapter.insertMessage(Message(e.toString(), RECEIVE_ID, timeStamp))
+                    rvMessages.scrollToPosition(adapter.itemCount-1)
+                    sendButton.isEnabled = true
+                    etMessages.isEnabled = true
+                    sendButton.text ="Send"
+                    etMessages.setText("")
+                }
             }
+
         }
     }
 
