@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-
     <LinearLayout
         android:id="@+id/ll_layout_bar"
         android:layout_width="match_parent"
@@ -55,6 +54,14 @@
         android:background="#42A5F5"
         android:id="@+id/dark_divider"/>
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        app:indicatorColor="@color/cardview_shadow_start_color"
+        android:visibility="invisible"
+        android:id="@+id/loading"/>
 
 
 </RelativeLayout>

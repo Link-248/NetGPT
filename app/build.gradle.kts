@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     //OpenAI API usage
-    implementation("com.aallam.openai:openai-client:3.5.1")
+    implementation("com.aallam.openai:openai-client:3.6.1")
 
     //ktor engine
     implementation("io.ktor:ktor-client-android:2.2.2")
@@ -64,4 +64,18 @@ dependencies {
     //Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // optional - RxJava2 support
+    implementation("androidx.datastore:datastore-preferences-rxjava2:1.0.0")
+
+    // optional - RxJava3 support
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.0.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+
+    //implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+    //implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
 }

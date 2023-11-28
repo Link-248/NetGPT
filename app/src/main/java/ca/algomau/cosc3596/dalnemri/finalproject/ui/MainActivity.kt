@@ -1,24 +1,31 @@
 package ca.algomau.cosc3596.dalnemri.finalproject.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.R as popup
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ca.algomau.cosc3596.dalnemri.finalproject.R
+import ca.algomau.cosc3596.dalnemri.finalproject.data.MainViewModel
+import ca.algomau.cosc3596.dalnemri.finalproject.data.Message
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Constants.RECEIVE_ID
+import ca.algomau.cosc3596.dalnemri.finalproject.utils.Constants.SEND_ID
+import ca.algomau.cosc3596.dalnemri.finalproject.utils.Response
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Time
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ca.algomau.cosc3596.dalnemri.finalproject.data.Message
-import ca.algomau.cosc3596.dalnemri.finalproject.utils.Constants.SEND_ID
-import ca.algomau.cosc3596.dalnemri.finalproject.utils.Response
-import ca.algomau.cosc3596.dalnemri.finalproject.utils.WebSearch
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,18 +33,66 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rvMessages: RecyclerView
     private lateinit var etMessages: EditText
     private lateinit var sendButton: Button
+    private lateinit var settings: ImageView
+    private lateinit var clear: ImageView
+    private lateinit var indicator: CircularProgressIndicator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        viewModel.getBaseUrl.observe(
+            this
+        ) { base ->
+            Response.setBaseUrl(base)
+        }
+        viewModel.getApiKey.observe(
+            this
+        ) { key ->
+            Response.setApiKey(key)
+        }
+        viewModel.getModel.observe(
+            this
+        ) { model ->
+            Response.setModel(model)
+        }
+
         rvMessages = findViewById(R.id.rv_messages)
         etMessages = findViewById(R.id.et_message)
         sendButton = findViewById(R.id.btn_send)
+        indicator = findViewById(R.id.loading)
 
         recyclerView()
         clickEvents()
         customMessage("Hello! How can I help you?")
+
+        supportActionBar?.setDisplayShowCustomEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        val customView = layoutInflater.inflate(R.layout.menu_bar, null)
+        supportActionBar?.customView = customView
+
+        settings = customView.findViewById(R.id.settings)
+        clear = customView.findViewById(R.id.clear)
+        settings.setOnClickListener{
+            val intent = Intent(this, Settings::class.java)
+            startActivity(intent)
+        }
+
+        clear.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage("Clear all messages?")
+                .setTitle("Clear")
+                .setPositiveButton("Clear", DialogInterface.OnClickListener { dialog, id ->
+                    adapter.clearAll()
+                })
+                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
+                    // CANCEL
+                })
+            // Create and show the AlertDialog
+            builder.create().show()
+        }
     }
 
     override fun onStart() {
@@ -47,10 +102,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun clickEvents() {
         sendButton.setOnClickListener {
-            sendMessage()
-            sendButton.isEnabled = false
-            etMessages.isEnabled = false
-            sendButton.text ="Loading..."
+            if(sendMessage()){
+                sendButton.isEnabled = false
+                etMessages.isEnabled = false
+                sendButton.text ="Loading..."
+                indicator.visibility = View.VISIBLE
+            }
         }
 
         etMessages.setOnClickListener {
@@ -64,17 +121,20 @@ class MainActivity : AppCompatActivity() {
         rvMessages.layoutManager = LinearLayoutManager(applicationContext)
     }
 
-    private fun sendMessage() {
+    private fun sendMessage(): Boolean {
         val message = etMessages.text.toString()
         val timeStamp = Time.timeStamp()
 
-        if(message.isNotEmpty()){
+        if(message != ""){
 
             adapter.insertMessage(Message(message, SEND_ID, timeStamp))
             rvMessages.scrollToPosition(adapter.itemCount - 1)
 
             botResponse(message)
+            return true
         }
+
+        return false
     }
 
     private fun botResponse(message: String){
@@ -90,6 +150,7 @@ class MainActivity : AppCompatActivity() {
                     etMessages.isEnabled = true
                     sendButton.text ="Send"
                     etMessages.setText("")
+                    indicator.visibility = View.INVISIBLE
                 }
             }catch (e: Exception){
                 withContext(Dispatchers.Main) { // Switch back to the main thread to update the UI
@@ -99,6 +160,7 @@ class MainActivity : AppCompatActivity() {
                     etMessages.isEnabled = true
                     sendButton.text ="Send"
                     etMessages.setText("")
+                    indicator.visibility = View.INVISIBLE
                 }
             }
 

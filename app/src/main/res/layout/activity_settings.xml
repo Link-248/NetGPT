@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.Settings"
+    android:orientation="vertical">
+
+    <GridLayout
+        android:layout_width="401dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_marginLeft="15dp"
+            android:text="Base URL: " />
+
+        <EditText
+            android:id="@+id/baseUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="API Url here, must be /v1/chat"
+            android:layout_marginRight="75dp"/>
+
+    </GridLayout>
+    <GridLayout
+        android:layout_width="401dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_marginLeft="15dp"
+            android:text="API Key: " />
+
+        <EditText
+            android:id="@+id/apiKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="API key goes here"
+            android:layout_marginRight="75dp"/>
+
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="401dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_marginLeft="15dp"
+            android:text="Model: " />
+
+        <EditText
+            android:id="@+id/model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="for example: gpt-3.5-turbo"
+            android:layout_marginRight="75dp"/>
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:text="Save API details"/>
+
+</LinearLayout>

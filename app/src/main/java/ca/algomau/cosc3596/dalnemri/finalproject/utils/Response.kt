@@ -1,4 +1,7 @@
 package ca.algomau.cosc3596.dalnemri.finalproject.utils
+import androidx.lifecycle.ViewModelProvider
+import ca.algomau.cosc3596.dalnemri.finalproject.data.DataStoreManager
+import ca.algomau.cosc3596.dalnemri.finalproject.data.MainViewModel
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.chat.FunctionMode
@@ -38,12 +41,29 @@ object Response {
             |2. If you used your tool ,Always provide the source you used, A.K.A the url
         """.trimMargin()
 
-    private val token = "" //add api key here
-    private val openAIHost = OpenAIHost(baseUrl = "add base url here")
-    private val modelId = ModelId("gpt-4")
-    private val openAI = OpenAI(token = token, timeout = Timeout(socket = 300.seconds), host = openAIHost)
+    private var token = ""
+    private var baseUrl = "https://api.openai.com/v1/chat"
+    private var modelId = ModelId("gpt-3.5-turbo")
+    private val openAIHost: OpenAIHost
+        get() = OpenAIHost(baseUrl = baseUrl)
 
-    val searchParams = Parameters.buildJsonObject {
+    private var openAI: OpenAI = OpenAI(token = token, timeout = Timeout(socket = 300.seconds), host = OpenAIHost(baseUrl = baseUrl))
+
+    fun setBaseUrl(url: String) {
+        baseUrl = url
+        openAI = OpenAI(token = token, timeout = Timeout(socket = 300.seconds), host = OpenAIHost(baseUrl = baseUrl))
+    }
+
+    fun setApiKey(key: String) {
+        token = key
+        openAI = OpenAI(token = token, timeout = Timeout(socket = 300.seconds), host = OpenAIHost(baseUrl = baseUrl))
+    }
+
+    fun setModel(model: String) {
+        modelId = ModelId(model)
+    }
+
+    private val searchParams = Parameters.buildJsonObject {
         put("type", "object")
         putJsonObject("properties") {
             putJsonObject("query") {
@@ -56,7 +76,7 @@ object Response {
         }
     }
 
-    val scrapeWebsiteParams = Parameters.buildJsonObject {
+    private val scrapeWebsiteParams = Parameters.buildJsonObject {
         put("type", "object")
         putJsonObject("properties") {
             putJsonObject("url") {

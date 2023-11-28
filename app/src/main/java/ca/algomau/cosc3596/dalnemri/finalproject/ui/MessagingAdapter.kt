@@ -33,16 +33,21 @@ class MessagingAdapter : RecyclerView.Adapter<MessagingAdapter.MessageViewHolder
         return messagesList.size
     }
 
+    fun clearAll() {
+        messagesList.clear()
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val currentMessage = messagesList[position]
 
         val tvMessage = holder.itemView.findViewById<TextView>(R.id.tv_message)
         val tvBotMessage = holder.itemView.findViewById<TextView>(R.id.tv_bot_message)
 
-        holder.itemView.setOnClickListener {
+        /*holder.itemView.setOnClickListener {
             messagesList.removeAt(holder.adapterPosition)
             notifyItemRemoved(holder.adapterPosition)
-        }
+        }*/
 
         when (currentMessage.id) {
             SEND_ID -> {
