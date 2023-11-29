@@ -3,6 +3,7 @@ package ca.algomau.cosc3596.dalnemri.finalproject.ui
 import android.R as popup
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -10,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,7 @@ import ca.algomau.cosc3596.dalnemri.finalproject.utils.Constants.RECEIVE_ID
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Constants.SEND_ID
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Response
 import ca.algomau.cosc3596.dalnemri.finalproject.utils.Time
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -62,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         rvMessages = findViewById(R.id.rv_messages)
         etMessages = findViewById(R.id.et_message)
         sendButton = findViewById(R.id.btn_send)
-        indicator = findViewById(R.id.loading)
+
 
         recyclerView()
         clickEvents()
@@ -72,6 +75,14 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         val customView = layoutInflater.inflate(R.layout.menu_bar, null)
         supportActionBar?.customView = customView
+
+        indicator = customView.findViewById(R.id.loading)
+
+        var logo: ImageView = customView.findViewById(R.id.logo)
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.logo)
+        val roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap)
+        roundedBitmapDrawable.isCircular = true
+        logo.setImageDrawable(roundedBitmapDrawable)
 
         settings = customView.findViewById(R.id.settings)
         clear = customView.findViewById(R.id.clear)
@@ -86,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                 .setTitle("Clear")
                 .setPositiveButton("Clear", DialogInterface.OnClickListener { dialog, id ->
                     adapter.clearAll()
+                    Response.clearChatHistory()
                 })
                 .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
                     // CANCEL
